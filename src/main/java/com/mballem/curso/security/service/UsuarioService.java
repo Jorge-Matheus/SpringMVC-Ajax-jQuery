@@ -80,7 +80,6 @@ public class UsuarioService implements UserDetailsService {
 
 	@Transactional(readOnly = true)
 	public Usuario buscarPorId(Long id) {
-		
 		return repository.findById(id).get();
 	}
 

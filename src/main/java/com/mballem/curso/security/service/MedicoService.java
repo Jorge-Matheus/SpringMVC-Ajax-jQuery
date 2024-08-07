@@ -16,12 +16,12 @@ public class MedicoService {
 	
 	@Transactional(readOnly = true)
 	public Medico buscarPorUsuarioId(Long id) {
-		return repository.findById(id).orElse(new Medico());
+		return repository.findByUsuarioId(id).orElse(new Medico());
 	}
 
 	@Transactional(readOnly = false)
 	public void salvar(Medico medico) {
-		repository.save(medico);	
+		repository.save(medico);
 	}
 
 	@Transactional(readOnly = false)
@@ -33,6 +33,11 @@ public class MedicoService {
 		if(!medico.getEspecialidades().isEmpty()) {
 			m2.getEspecialidades().addAll(medico.getEspecialidades());
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public Medico buscarPorEmail(String email) {
+		return repository.findByUsuarioEmail(email).orElse(new Medico());
 	}
 	
 }
