@@ -23,12 +23,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
+		//acessos publicos liberados
 		http.authorizeRequests()
 		.antMatchers("/", "/home").permitAll()
 		.antMatchers("/webjars/**", "/css/**", "/image/**", "/js/**").permitAll()
 		
 		// acessos privados admin
+		.antMatchers("/u/editar/senha", "/u/confirmar/senha").hasAuthority(MEDICO)
 		.antMatchers("/u/**").hasAuthority(ADMIN)
 		
 		// acessos privados medicos

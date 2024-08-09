@@ -37,8 +37,6 @@ public class UsuarioService implements UserDetailsService {
 		return repository.findByEmail(email);
 	}
 	
-	
-	
 	@Override @Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Usuario usuario = buscarPorEmail(username);
@@ -48,7 +46,7 @@ public class UsuarioService implements UserDetailsService {
 				AuthorityUtils.createAuthorityList(getAuthorities(usuario.getPerfis()))	
 			);
 	}
-	
+
 	
 	private String[] getAuthorities(List<Perfil> perfis) {
 		String[] authorities = new String[perfis.size()];
@@ -57,7 +55,6 @@ public class UsuarioService implements UserDetailsService {
 		}
 		return authorities;
 	}
-
 
 	@Transactional(readOnly = true)
 	public Map<String, Object> buscarTodos(HttpServletRequest request) {
@@ -69,7 +66,6 @@ public class UsuarioService implements UserDetailsService {
 		return datatables.getResponse(page);
 	}
 
-
 	@Transactional(readOnly = false)
 	public void salvarUsuario(Usuario usuario) {
 		String crypt = new BCryptPasswordEncoder().encode(usuario.getSenha());
@@ -77,15 +73,23 @@ public class UsuarioService implements UserDetailsService {
 		repository.save(usuario);
 	}
 
-
 	@Transactional(readOnly = true)
 	public Usuario buscarPorId(Long id) {
 		return repository.findById(id).get();
 	}
 
-
 	@Transactional(readOnly = true)
 	public Usuario BuscarPorIdEPerfis(Long usuarioId, Long[] perfisId) {
 		return repository.findByIdAndPerfis(usuarioId, perfisId).orElseThrow(() -> new UsernameNotFoundException("Usuário inexistente!"));
+	}
+
+	public static boolean isSenhaCorreta(String senhaDigitada, String senhaArmazenada) {
+		return new BCryptPasswordEncoder().matches(senhaDigitada, senhaArmazenada);
+	}
+
+	@Transactional(readOnly = false)
+	public void alterarSenha(Usuario usuario, String senha) {
+		usuario.setSenha(new BCryptPasswordEncoder().encode(senha));
+		repository.save(usuario);
 	}
 }
