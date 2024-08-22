@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import com.mballem.curso.security.service.EmailService;
+
 @SpringBootApplication
 public class DemoSecurityApplication implements CommandLineRunner {
 
@@ -17,14 +19,13 @@ public class DemoSecurityApplication implements CommandLineRunner {
 	
 	@Autowired
 	JavaMailSender sender;
+	
+	@Autowired
+	EmailService emailService;
 
 	@Override
 	public void run(String... args) throws Exception {
-		SimpleMailMessage simple = new SimpleMailMessage();
-		simple.setTo("");
-		simple.setText("Teste número 1");
-		simple.setSubject("Teste 1");
-		sender.send(simple);
+		emailService.enviarPedidoDeConfirmacaoDeCadastro("jacob.jacobjazz@gmail.com", "9852pol");
 	}
 	
 
