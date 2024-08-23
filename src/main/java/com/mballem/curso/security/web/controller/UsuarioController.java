@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -176,4 +177,36 @@ public class UsuarioController {
 			attr.addFlashAttribute("subtexto", "Siga com seu login/senha");
 			return "redirect:/login";
 		}
+		
+		// abre a página de pedido de redefinição de senha
+		@GetMapping("/p/redefinir/senha")
+		public String pedidoRedefirnirSenha() {
+			return "usuario/pedido-recuperar-senha";
+		}
+		
+		// form de pedido de recuperar senha
+		@GetMapping("/p/recuperar/senha")
+		public String redefinirSenha(String email, ModelMap model) throws MessagingException {
+			service.pedidoRedefinicaoDeSenha(email);
+			model.addAttribute("sucesso", "Em instantes você receberá um e-mail para "
+					+ "prosseguir com a redefinição de sua senha.");
+			model.addAttribute("usuario", new Usuario(email));
+			return "usuario/recuperar-senha";
+		}
+		
+		// salvar a nova via recuperação de senha
+		@PostMapping("/p/nova/senha")
+		public String confirmacaoDeRedefinicaoDeSenha(Usuario usuario, ModelMap model) {
+			Usuario u = service.buscarPorEmail(usuario.getEmail());
+			if(!usuario.getCodigoVerificador().equals(u.getCodigoVerificador())) {
+				model.addAttribute("falha", "Còdigo verificado incorreto.");
+				return "usuario/recuperar-senha";
+			}
+			u.setCodigoVerificador(null);
+			service.alterarSenha(u, usuario.getSenha());
+			model.addAttribute("alerta", "sucesso");
+			model.addAttribute("titulo", "Senha redefinida!");
+			model.addAttribute("texto", "Você já pode logar no sistema.");
+			return "login";
+		}		
 }
